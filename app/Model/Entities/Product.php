@@ -14,6 +14,7 @@ use LeanMapper\Entity;
  * @property float $price
  * @property string $photoExtension = ''
  * @property bool $available = true
+ * @property Size $size m:hasOne
  * @property Category|null $category m:hasOne
  */
 class Product extends Entity implements \Nette\Security\Resource{

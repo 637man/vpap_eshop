@@ -27,6 +27,7 @@ services:
 
 	- App\AdminModule\Components\CategoryEditForm\CategoryEditFormFactory
 	- App\AdminModule\Components\ProductEditForm\ProductEditFormFactory
+	- App\AdminModule\Components\SizeEditForm\SizeEditFormFactory
 
 	- App\FrontModule\Components\UserLoginForm\UserLoginFormFactory
 	- App\FrontModule\Components\UserRegistrationForm\UserRegistrationFormFactory
@@ -43,8 +44,10 @@ services:
 	- App\Model\Facades\ProductsFacade
 	- App\Model\Facades\UsersFacade
 	- App\Model\Facades\CartFacade
+	- App\Model\Facades\SizeFacade
 
 	- App\Model\Repositories\CategoryRepository
+	- App\Model\Repositories\SizeRepository
 	- App\Model\Repositories\ForgottenPasswordRepository
 	- App\Model\Repositories\PermissionRepository
 	- App\Model\Repositories\ProductRepository

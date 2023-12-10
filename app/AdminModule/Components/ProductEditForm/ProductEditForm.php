@@ -5,6 +5,7 @@ namespace App\AdminModule\Components\ProductEditForm;
 use App\Model\Entities\Product;
 use App\Model\Facades\CategoriesFacade;
 use App\Model\Facades\ProductsFacade;
+use App\Model\Facades\SizeFacade;
 use Nette;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -33,6 +34,7 @@ class ProductEditForm extends Form{
 
   private CategoriesFacade $categoriesFacade;
   private ProductsFacade $productsFacade;
+  private SizeFacade $sizeFacade;
 
   /**
    * TagEditForm constructor.
@@ -42,11 +44,12 @@ class ProductEditForm extends Form{
    * @param ProductsFacade $productsFacade
    * @noinspection PhpOptionalBeforeRequiredParametersInspection
    */
-  public function __construct(Nette\ComponentModel\IContainer $parent = null, string $name = null, CategoriesFacade $categoriesFacade, ProductsFacade $productsFacade){
+  public function __construct(Nette\ComponentModel\IContainer $parent = null, string $name = null, CategoriesFacade $categoriesFacade, ProductsFacade $productsFacade, SizeFacade $sizeFacade){
     parent::__construct($parent, $name);
     $this->setRenderer(new Bs4FormRenderer(FormLayout::VERTICAL));
     $this->categoriesFacade=$categoriesFacade;
     $this->productsFacade=$productsFacade;
+    $this->sizeFacade = $sizeFacade;
     $this->createSubcomponents();
   }
 
@@ -76,10 +79,18 @@ class ProductEditForm extends Form{
     foreach ($categories as $category){
       $categoriesArr[$category->categoryId]=$category->title;
     }
+    $sizes = $this->sizeFacade->findSizes();
+    $sizesArr = [];
+      foreach ($sizes as $size){
+          $sizesArr[$size->sizeId]=$size->size;
+      }
     $this->addSelect('categoryId','Kategorie',$categoriesArr)
       ->setPrompt('--vyberte kategorii--')
       ->setRequired(false);
     #endregion kategorie
+      $this->addSelect('sizeId','Velikost',$sizesArr)
+          ->setPrompt('--vyberte velikost--')
+          ->setRequired(false);
 
     $this->addTextArea('description', 'Popis produktu')
       ->setRequired('Zadejte popis produktu.');
@@ -128,6 +139,8 @@ class ProductEditForm extends Form{
           $product=new Product();
         }
         $product->assign($values,['title','url','description','available']);
+        $product->size=$this->sizeFacade->getSize($values['sizeId']);
+        $product->category=$this->categoriesFacade->getCategory($values['categoryId']);
         $product->price=floatval($values['price']);
         $this->productsFacade->saveProduct($product);
         $this->setValues(['productId'=>$product->productId]);
@@ -164,7 +177,8 @@ class ProductEditForm extends Form{
         'title'=>$values->title,
         'url'=>$values->url,
         'description'=>$values->description,
-        'price'=>$values->price
+        'price'=>$values->price,
+        'sizeId'=>$values->size->sizeId
       ];
     }
     parent::setDefaults($values, $erase);
