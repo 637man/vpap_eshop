@@ -9,6 +9,7 @@ cp -r app ../public_html/vpap_eshop
 cp -r vendor ../public_html/vpap_eshop
 cp -r index.php ../public_html/vpap_eshop
 cp -r www ../public_html/vpap_eshop
+cp -r .htaccess ../public_html/vpap_eshop
 
 cp eshopconfiglocal.neon ../public_html/vpap_eshop/config/local.neon
 cp eshopcongigcommon.neon ../public_html/vpap_eshop/config/common.neon
