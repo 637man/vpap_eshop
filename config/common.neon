@@ -46,10 +46,12 @@ services:
 	- App\Model\Facades\CartFacade
 	- App\Model\Facades\SizeFacade
 	- App\Model\Facades\SizesToProductsFacade
+	- App\Model\Facades\OrdersFacade
 
 	- App\Model\Repositories\CategoryRepository
 	- App\Model\Repositories\SizeRepository
 	- App\Model\Repositories\SizesToProductsRepository
+	- App\Model\Repositories\OrdersRepository
 	- App\Model\Repositories\ForgottenPasswordRepository
 	- App\Model\Repositories\PermissionRepository
 	- App\Model\Repositories\ProductRepository
