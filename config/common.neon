@@ -28,6 +28,7 @@ services:
 	- App\AdminModule\Components\CategoryEditForm\CategoryEditFormFactory
 	- App\AdminModule\Components\ProductEditForm\ProductEditFormFactory
 	- App\AdminModule\Components\SizeEditForm\SizeEditFormFactory
+	- App\AdminModule\Components\OrderEditForm\OrderEditFormFactory
 
 	- App\FrontModule\Components\UserLoginForm\UserLoginFormFactory
 	- App\FrontModule\Components\UserRegistrationForm\UserRegistrationFormFactory

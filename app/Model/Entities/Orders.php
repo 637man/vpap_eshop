@@ -2,14 +2,14 @@
 
 namespace App\Model\Entities;
 
-use DateTime;
+use Dibi\DateTime;
 use LeanMapper\Entity;
 
 /**
  * Class Order
  * @package App\Model\Entities
- * @property int $orderId
- * @property int $userId
+ * @property int $ordersId
+ * @property User $user m:hasOne
  * @property float $price
  * @property int $status
  * @property DateTime $created

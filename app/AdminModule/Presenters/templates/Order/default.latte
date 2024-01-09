@@ -7,16 +7,24 @@
         <thead>
         <tr>
             <th scope="col">ID objednavky</th>
+            <th scope="col">Cena</th>
+            <th scope="col">Status</th>
+            <th scope="col">Uživatel</th>
+            <th scope="col">Vytvořeno</th>
             <th scope="col" class="col-xl-1 col-md-2">Akce</th>
         </tr>
         </thead>
         <tbody>
         {foreach $orders as $order}
             <tr>
-                <td>{$order->orderId}</td>
+                <td>{$order->ordersId}</td>
+                <td>{$order->price} Kč</td>
+                <td>{$order->status}</td>
+                <td>{$order->user->name}</td>
+                <td>{$order->created|date:'d-m-Y H:i:s'}</td>
                 <td class="text-nowrap">
-                    <a href="{link edit id=>$order->orderId}" class="btn btn-sm btn-outline-primary">upravit</a>
-                    <a href="{link delete id=>$order->orderId}" class="btn btn-sm btn-outline-danger {if !$user->isAllowed($order,'delete')}disabled{/if}">smazat</a>
+                    <a href="{link edit id=>$order->ordersId}" class="btn btn-sm btn-outline-primary">upravit</a>
+                    <a href="{link delete id=>$order->ordersId}" class="btn btn-sm btn-outline-danger {if !$user->isAllowed($order,'delete')}disabled{/if}">smazat</a>
                 </td>
             </tr>
         {/foreach}

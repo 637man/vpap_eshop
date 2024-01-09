@@ -7,3 +7,5 @@ INSERT INTO `resource` (`resource_id`) VALUES ('Admin:Order');
 INSERT INTO `permission`(`role_id`, `resource_id`, `action`, `type`) VALUES ('admin','Admin:Order','','allow');
 CREATE TABLE `orders` (`order_id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT NULL , `price` FLOAT NOT NULL , `status` INT NOT NULL , `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`order_id`)) ENGINE = InnoDB;
 ALTER TABLE `orders` ADD CONSTRAINT `user_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+INSERT INTO `resource` (`resource_id`) VALUES ('Orders');

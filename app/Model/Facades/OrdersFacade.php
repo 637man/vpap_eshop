@@ -33,7 +33,7 @@ class OrdersFacade {
      * @param array|null $params = null
      * @param int|null $offset = null
      * @param int|null $limit = null
-     * @return Size[]
+     * @return Orders[]
      */
     public function findOrders(array $params=null,int $offset=null,int $limit=null):array {
         return $this->orderRepository->findAllBy($params,$offset,$limit);

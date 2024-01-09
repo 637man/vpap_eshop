@@ -2,10 +2,15 @@
 
 namespace App\AdminModule\Presenters;
 
+use App\AdminModule\Components\OrderEditForm\OrderEditForm;
+use App\AdminModule\Components\OrderEditForm\OrderEditFormFactory;
+use App\AdminModule\Components\SizeEditForm\SizeEditForm;
+use App\AdminModule\Components\SizeEditForm\SizeEditFormFactory;
 use App\Model\Facades\OrdersFacade;
 
 class OrderPresenter extends BasePresenter{
     private OrdersFacade $orderFacade;
+    private OrderEditFormFactory $orderEditFormFactory;
 
     /**
      * Akce pro vykreslení seznamu objednavek
@@ -26,8 +31,8 @@ class OrderPresenter extends BasePresenter{
             $this->flashMessage('Požadovaná objednavka nebyla nalezena.', 'error');
             $this->redirect('default');
         }
-        //TODO $form=$this->getComponent('sizeEditForm');
-        //$form->setDefaults($order);
+        $form=$this->getComponent('orderEditForm');
+        $form->setDefaults($order);
         $this->template->order=$order;
     }
 
@@ -58,11 +63,33 @@ class OrderPresenter extends BasePresenter{
         $this->redirect('default');
     }
 
+    public function createComponentOrderEditForm():OrderEditForm {
+        $form = $this->orderEditFormFactory->create();
+        $form->onCancel[]=function(){
+            $this->redirect('default');
+        };
+        $form->onFinished[]=function($message=null){
+            if (!empty($message)){
+                $this->flashMessage($message);
+            }
+            $this->redirect('default');
+        };
+        $form->onFailed[]=function($message=null){
+            if (!empty($message)){
+                $this->flashMessage($message,'error');
+            }
+            $this->redirect('default');
+        };
+        return $form;
+    }
+
     #region injections
     public function injectOrderFacade(OrdersFacade $orderFacade):void {
         $this->orderFacade=$orderFacade;
     }
+
+    public function injectSizeEditFormFactory(OrderEditFormFactory $orderEditFormFactory):void {
+        $this->orderEditFormFactory=$orderEditFormFactory;
+    }
     #endregion injections
-
-
 }
