@@ -3,9 +3,11 @@
 namespace App\AdminModule\Components\ProductEditForm;
 
 use App\Model\Entities\Product;
+use App\Model\Entities\SizesToProducts;
 use App\Model\Facades\CategoriesFacade;
 use App\Model\Facades\ProductsFacade;
 use App\Model\Facades\SizeFacade;
+use App\Model\Facades\SizesToProductsFacade;
 use Nette;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -35,21 +37,25 @@ class ProductEditForm extends Form{
   private CategoriesFacade $categoriesFacade;
   private ProductsFacade $productsFacade;
   private SizeFacade $sizeFacade;
+  private SizesToProductsFacade $sizesToProductsFacade;
 
-  /**
-   * TagEditForm constructor.
-   * @param Nette\ComponentModel\IContainer|null $parent
-   * @param string|null $name
-   * @param CategoriesFacade $categoriesFacade
-   * @param ProductsFacade $productsFacade
-   * @noinspection PhpOptionalBeforeRequiredParametersInspection
-   */
-  public function __construct(Nette\ComponentModel\IContainer $parent = null, string $name = null, CategoriesFacade $categoriesFacade, ProductsFacade $productsFacade, SizeFacade $sizeFacade){
+    /**
+     * TagEditForm constructor.
+     * @param Nette\ComponentModel\IContainer|null $parent
+     * @param string|null $name
+     * @param CategoriesFacade $categoriesFacade
+     * @param ProductsFacade $productsFacade
+     * @param SizeFacade $sizeFacade
+     * @param SizesToProductsFacade $sizesToProductsFacade
+     * @noinspection PhpOptionalBeforeRequiredParametersInspection
+     */
+  public function __construct(Nette\ComponentModel\IContainer $parent = null, string $name = null, CategoriesFacade $categoriesFacade, ProductsFacade $productsFacade, SizeFacade $sizeFacade, SizesToProductsFacade $sizesToProductsFacade){
     parent::__construct($parent, $name);
     $this->setRenderer(new Bs4FormRenderer(FormLayout::VERTICAL));
     $this->categoriesFacade=$categoriesFacade;
     $this->productsFacade=$productsFacade;
     $this->sizeFacade = $sizeFacade;
+    $this->sizesToProductsFacade = $sizesToProductsFacade;
     $this->createSubcomponents();
   }
 
@@ -88,9 +94,8 @@ class ProductEditForm extends Form{
       ->setPrompt('--vyberte kategorii--')
       ->setRequired(false);
     #endregion kategorie
-      $this->addSelect('sizeId','Velikost',$sizesArr)
-          ->setPrompt('--vyberte velikost--')
-          ->setRequired(false);
+      $this->addCheckboxList('sizes','Velikost',$sizesArr)
+          ->addRule(Form::IS_IN, 'Vyberte alespoň jednu velikost', array_keys($sizesArr));
 
     $this->addTextArea('description', 'Popis produktu')
       ->setRequired('Zadejte popis produktu.');
@@ -139,12 +144,21 @@ class ProductEditForm extends Form{
           $product=new Product();
         }
         $product->assign($values,['title','url','description','available']);
-        $product->size=$this->sizeFacade->getSize($values['sizeId']);
         $product->category=$this->categoriesFacade->getCategory($values['categoryId']);
         $product->price=floatval($values['price']);
         $this->productsFacade->saveProduct($product);
         $this->setValues(['productId'=>$product->productId]);
 
+        if (!empty($values['sizes'])) {
+            bdump($values['sizes']);
+            foreach ($values['sizes'] as $size) {
+                $sizesToProducts = new SizesToProducts();
+                $sizesToProducts->productId = $product->productId;
+                $sizesToProducts->sizeId = $size;
+                bdump($sizesToProducts);
+                $this->sizesToProductsFacade->saveSizesToProduct($sizesToProducts);
+            }
+        }
         //uložení fotky
         if (($values['photo'] instanceof Nette\Http\FileUpload) && ($values['photo']->isOk())){
           try{
@@ -170,6 +184,7 @@ class ProductEditForm extends Form{
    * @return $this
    */
   public function setDefaults($values, bool $erase = false):self {
+      bdump($values);
     if ($values instanceof Product){
       $values = [
         'productId'=>$values->productId,
@@ -177,8 +192,7 @@ class ProductEditForm extends Form{
         'title'=>$values->title,
         'url'=>$values->url,
         'description'=>$values->description,
-        'price'=>$values->price,
-        'sizeId'=>$values->size->sizeId
+        'price'=>$values->price
       ];
     }
     parent::setDefaults($values, $erase);

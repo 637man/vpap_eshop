@@ -6,9 +6,9 @@ parameters:
     database:
         driver: mysqli
         host: localhost
-        username: xname
-        password: heslokdatabazi
-        database: xname
+        username: pelj03
+        password: quoh9usee4Eefoshee
+        database: pelj03
         charset: utf8mb4
 
     facebook:

@@ -45,9 +45,11 @@ services:
 	- App\Model\Facades\UsersFacade
 	- App\Model\Facades\CartFacade
 	- App\Model\Facades\SizeFacade
+	- App\Model\Facades\SizesToProductsFacade
 
 	- App\Model\Repositories\CategoryRepository
 	- App\Model\Repositories\SizeRepository
+	- App\Model\Repositories\SizesToProductsRepository
 	- App\Model\Repositories\ForgottenPasswordRepository
 	- App\Model\Repositories\PermissionRepository
 	- App\Model\Repositories\ProductRepository

@@ -5,6 +5,7 @@ namespace App\AdminModule\Presenters;
 use App\AdminModule\Components\ProductEditForm\ProductEditForm;
 use App\AdminModule\Components\ProductEditForm\ProductEditFormFactory;
 use App\Model\Facades\ProductsFacade;
+use App\Model\Facades\SizesToProductsFacade;
 
 /**
  * Class ProductPresenter
@@ -13,6 +14,7 @@ use App\Model\Facades\ProductsFacade;
 class ProductPresenter extends BasePresenter{
   private ProductsFacade $productsFacade;
   private ProductEditFormFactory $productEditFormFactory;
+  private SizesToProductsFacade $sizesToProductsFacade;
 
   /**
    * Akce pro vykreslení seznamu produktů
@@ -39,7 +41,14 @@ class ProductPresenter extends BasePresenter{
     }
 
     $form=$this->getComponent('productEditForm');
-    $form->setDefaults($product);
+    $defaults = $product->getData();
+    $sizes = $this->sizesToProductsFacade->findSizes(['product_id' => $product->productId]);
+    $defSizes = [];
+    foreach ($sizes as $size) {
+        $defSizes[$size->sizeId] = true;
+    }
+    $defaults['sizes'] = $defSizes;
+    $form->setDefaults($defaults);
     $this->template->product=$product;
   }
 
@@ -74,6 +83,9 @@ class ProductPresenter extends BasePresenter{
   public function injectProductEditFormFactory(ProductEditFormFactory $productEditFormFactory):void {
     $this->productEditFormFactory=$productEditFormFactory;
   }
+    public function injectsizesToProductsFacade(SizesToProductsFacade $sizesToProductsFacade):void {
+        $this->sizesToProductsFacade=$sizesToProductsFacade;
+    }
   #endregion injections
 
 }
