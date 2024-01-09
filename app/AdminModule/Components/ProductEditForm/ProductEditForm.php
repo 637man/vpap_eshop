@@ -90,6 +90,7 @@ class ProductEditForm extends Form{
       foreach ($sizes as $size){
           $sizesArr[$size->sizeId]=$size->size;
       }
+      bdump($sizesArr);
     $this->addSelect('categoryId','Kategorie',$categoriesArr)
       ->setPrompt('--vyberte kategorii--')
       ->setRequired(false);
@@ -150,12 +151,10 @@ class ProductEditForm extends Form{
         $this->setValues(['productId'=>$product->productId]);
 
         if (!empty($values['sizes'])) {
-            bdump($values['sizes']);
             foreach ($values['sizes'] as $size) {
                 $sizesToProducts = new SizesToProducts();
                 $sizesToProducts->productId = $product->productId;
                 $sizesToProducts->sizeId = $size;
-                bdump($sizesToProducts);
                 $this->sizesToProductsFacade->saveSizesToProduct($sizesToProducts);
             }
         }

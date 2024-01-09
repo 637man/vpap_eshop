@@ -26,6 +26,7 @@
 				{control cart}
 				{control userLogin}
 			</div>
+			<a n:if="$user->isAllowed('Admin:Dashboard','default')" n:href=":Admin:Dashboard:default">Admin</a>
 		</div>
 	</header>
 	<div class="container">
