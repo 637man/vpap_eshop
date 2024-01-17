@@ -9,3 +9,10 @@ CREATE TABLE `orders` (`order_id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NO
 ALTER TABLE `orders` ADD CONSTRAINT `user_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 INSERT INTO `resource` (`resource_id`) VALUES ('Orders');
+
+-- New commit
+ALTER TABLE `product` ADD `size_id` INT NULL DEFAULT NULL ;
+ALTER TABLE `cart_item` DROP INDEX `product_id`, ADD INDEX `product_id` (`product_id`, `cart_id`) USING BTREE;
+ALTER TABLE `cart_item` ADD `size_id` INT NULL DEFAULT NULL ;
+ALTER TABLE `orders` ADD `cart_id` INT NOT NULL ;
+ALTER TABLE `cart` ADD `order_created` INT NULL DEFAULT NULL;
