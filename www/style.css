@@ -78,6 +78,7 @@ tr {
 }
 td {
     border-color: #333333;
+    color: #bbbbbb;
     border-width: 1px;
     text-align: center center;
 }
