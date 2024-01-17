@@ -90,7 +90,7 @@ class ProductEditForm extends Form{
       foreach ($sizes as $size){
           $sizesArr[$size->sizeId]=$size->size;
       }
-      bdump($sizesArr);
+
     $this->addSelect('categoryId','Kategorie',$categoriesArr)
       ->setPrompt('--vyberte kategorii--')
       ->setRequired(false);

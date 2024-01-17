@@ -94,7 +94,7 @@ class CartControl extends Control{
     $cartItem=null;
     if (!empty($this->cart->items)){
       foreach ($this->cart->items as $item){
-        if ($item->product->productId == $product->productId && $item->product->size == $product->size){
+        if ($item->product->productId == $product->productId && $item->product->sizeId == $product->sizeId){
           $cartItem=$item;
           break;
         }
@@ -108,7 +108,7 @@ class CartControl extends Control{
     }
 
     $cartItem->count += $count;
-    $cartItem->sizeId = $product->size;
+    $cartItem->sizeId = $product->sizeId;
 
     $this->cartFacade->saveCartItem($cartItem);
     $this->cartFacade->saveCart($this->cart);
