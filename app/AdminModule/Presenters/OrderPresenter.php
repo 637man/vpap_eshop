@@ -49,11 +49,6 @@ class OrderPresenter extends BasePresenter{
             $this->redirect('default');
         }
 
-        if (!$this->user->isAllowed($order,'delete')){
-            $this->flashMessage('Tuto objednavku není možné smazat.', 'error');
-            $this->redirect('default');
-        }
-
         if ($this->orderFacade->deleteOrder($order)){
             $this->flashMessage('Objednavka byla smazána.', 'info');
         }else{

@@ -24,7 +24,7 @@
                 <td>{$order->created|date:'d-m-Y H:i:s'}</td>
                 <td class="text-nowrap">
                     <a href="{link edit id=>$order->ordersId}" class="btn btn-sm btn-outline-primary">upravit</a>
-                    <a href="{link delete id=>$order->ordersId}" class="btn btn-sm btn-outline-danger {if !$user->isAllowed($order,'delete')}disabled{/if}">smazat</a>
+                    <a href="{link delete id=>$order->ordersId}" class="btn btn-sm btn-outline-danger">smazat</a>
                 </td>
             </tr>
         {/foreach}
