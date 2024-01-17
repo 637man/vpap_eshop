@@ -3,6 +3,8 @@
 namespace App\FrontModule\Components\ProductCartForm;
 
 use App\FrontModule\Components\CartControl\CartControl;
+use App\Model\Facades\SizeFacade;
+use App\Model\Facades\SizesToProductsFacade;
 use Nette;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -19,15 +21,22 @@ class ProductCartForm extends Form{
   use SmartObject;
 
   private CartControl $cartControl;
+  protected SizesToProductsFacade $sizesToProducts;
+  protected SizeFacade $sizeFacade;
+  private int $productId;
 
-  /**
-   * ProductCartForm constructor.
-   * @param Nette\ComponentModel\IContainer|null $parent
-   * @param string|null $name
-   */
-  public function __construct(Nette\ComponentModel\IContainer $parent = null, string $name = null){
+    /**
+     * ProductCartForm constructor.
+     * @param Nette\ComponentModel\IContainer|null $parent
+     * @param string|null $name
+     * @param SizesToProductsFacade $sizesToProduct
+     */
+  public function __construct(Nette\ComponentModel\IContainer $parent = null, string $name = null, SizesToProductsFacade $sizesToProduct, SizeFacade $sizeFacade, int $productId){
     parent::__construct($parent, $name);
     $this->setRenderer(new Bs4FormRenderer(FormLayout::VERTICAL));
+    $this->sizesToProducts = $sizesToProduct;
+    $this->sizeFacade = $sizeFacade;
+    $this->productId = $productId;
     $this->createSubcomponents();
   }
 
@@ -43,6 +52,17 @@ class ProductCartForm extends Form{
     $this->addHidden('productId');
     $this->addInteger('count','Počet kusů')
       ->addRule(Form::RANGE,'Chybný počet kusů.',[1,100]);
+    $sizes = $this->sizesToProducts->findSizes(['product_id' => $this->productId]);
+
+    $s = [];
+    foreach ($sizes as $size) {
+        $sizeName = $this->sizeFacade->getSize($size->sizeId);
+        $s[$size->sizeId] = $sizeName->size;
+    }
+
+    $this->addRadioList('sizes', 'Velikosti: ',$s)
+        ->setRequired();
+
 
     $this->addSubmit('ok','přidat do košíku');
   }

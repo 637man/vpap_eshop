@@ -8,6 +8,6 @@ namespace App\FrontModule\Components\ProductCartForm;
  */
 interface ProductCartFormFactory{
 
-  public function create():ProductCartForm;
+  public function create(int $productId):ProductCartForm;
 
 }

@@ -1,4 +1,5 @@
 {varType App\Model\Entities\Cart $cart}
+{varType string[] $sizes}
 
 {if empty($cart->items)}
     košík je prázdný
@@ -6,18 +7,30 @@
 
 {else}
     <table class="table table-hover">
-
+        <thead>
+            <tr>
+                <th>Název produkt</th>
+                <th>Velikost</th>
+                <th>Počet kusů</th>
+            </tr>
+        </thead>
+        <tbody>
         {foreach $cart->items as $item}
             <tr>
-                <th>{$item->product->title}</th>
+                <td>{$item->product->title}</td>
+                <td>{$sizes[$item->cartItemId] ?? "Univerzální"} </td>
                 <td>{$item->count}</td>
                 <td>
                     <a href="{link remove! $item->cartItemId}">odebrat</a>
                 </td>
             </tr>
         {/foreach}
-
+        </tbody>
     </table>
 
+    <div class="p-2">
+        Celková cena je: {$cart->getTotalPrice()} Kč
+        <a n:if="$cart->orderCreated == null" class="btn btn-primary float-right" n:href="createOrder!, $cart->cartId">Vytvořit objednávku</a>
+    </div>
 
 {/if}

@@ -13,6 +13,7 @@ use LeanMapper\Entity;
  * @property Product $product m:hasOne
  * @property Cart $cart m:hasOne
  * @property int $count = 0
+ * @property int|null $sizeId = null
  */
 class CartItem extends Entity{
 

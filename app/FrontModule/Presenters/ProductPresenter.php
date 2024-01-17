@@ -46,11 +46,12 @@ class ProductPresenter extends BasePresenter{
 
   protected function createComponentProductCartForm():Multiplier {
     return new Multiplier(function($productId){
-      $form = $this->productCartFormFactory->create();
+      $form = $this->productCartFormFactory->create($productId);
       $form->setDefaults(['productId'=>$productId]);
       $form->onSubmit[]=function(ProductCartForm $form){
         try{
           $product = $this->productsFacade->getProduct($form->values->productId);
+          $product->size = $form->values->sizes;
           //kontrola zakoupitelnosti
         }catch (\Exception $e){
           $this->flashMessage('Produkt nejde přidat do košíku','error');

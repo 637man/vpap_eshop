@@ -13,6 +13,7 @@ use LeanMapper\Entity;
  * @property float $price
  * @property int $status
  * @property DateTime $created
+ * @property int $cartId
  */
 class Orders extends Entity implements \Nette\Security\Resource{
 

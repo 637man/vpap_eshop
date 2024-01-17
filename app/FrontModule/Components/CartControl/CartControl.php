@@ -4,8 +4,12 @@ namespace App\FrontModule\Components\CartControl;
 
 use App\Model\Entities\Cart;
 use App\Model\Entities\CartItem;
+use App\Model\Entities\Orders;
 use App\Model\Entities\Product;
 use App\Model\Facades\CartFacade;
+use App\Model\Facades\OrdersFacade;
+use App\Model\Facades\SizeFacade;
+use App\Model\Facades\UsersFacade;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Template;
 use Nette\Http\Session;
@@ -21,6 +25,9 @@ class CartControl extends Control{
   private SessionSection $cartSession;
   private CartFacade $cartFacade;
   private Cart $cart;
+  private SizeFacade $sizeFacade;
+  private OrdersFacade $ordersFacade;
+  private UsersFacade $usersFacade;
 
   /**
    * Akce renderující šablonu s odkazem pro zobrazení košíku
@@ -38,6 +45,13 @@ class CartControl extends Control{
   public function renderList():void {
     $template=$this->prepareTemplate('list');
     $template->cart=$this->cart;
+    $sizes = [];
+    foreach ($this->cart->items as $item) {
+        if ($item->sizeId !== null) {
+            $sizes[$item->cartItemId] = $this->sizeFacade->getSize($item->sizeId)->getData(['size'])['size'];
+        }
+    }
+    $template->sizes = $sizes;
     $template->render();
   }
 
@@ -51,16 +65,36 @@ class CartControl extends Control{
     $this->redirect('this');
   }
 
+    /**
+     * @param int $cartId
+     * @throws \Exception
+     */
+    public function handleCreateOrder(int $cartId) {
+      $cart = $this->cartFacade->getCartById($cartId);
+      $order = new Orders();
+      $order->status = 1;
+      $order->cartId = $cartId;
+      $order->price = $cart->getTotalPrice();
+      $order->user = $this->usersFacade->getUser($this->user->getId());
+      $this->ordersFacade->saveOrder($order);
+
+      // set Cart to order
+      $cart->orderCreated = $order->ordersId;
+      $this->cartFacade->saveCart($cart);
+
+        $this->presenter->flashMessage("Objednávka vytvořena");
+        $this->presenter->redirect("this");
+    }
+
   /**
    * Metoda pro přidání produktu do košíku
    * @param Product $product
    */
   public function addToCart(Product $product, int $count){
     $cartItem=null;
-
     if (!empty($this->cart->items)){
       foreach ($this->cart->items as $item){
-        if ($item->product->productId == $product->productId){
+        if ($item->product->productId == $product->productId && $item->product->size == $product->size){
           $cartItem=$item;
           break;
         }
@@ -74,21 +108,28 @@ class CartControl extends Control{
     }
 
     $cartItem->count += $count;
+    $cartItem->sizeId = $product->size;
 
     $this->cartFacade->saveCartItem($cartItem);
     $this->cartFacade->saveCart($this->cart);
     $this->cart->updateCartItems();
   }
 
-  /**
-   * UserLoginControl constructor.
-   * @param User $user
-   * @param Session $session
-   * @param CartFacade $cartFacade
-   */
-  public function __construct(User $user, Session $session, CartFacade $cartFacade){
+    /**
+     * UserLoginControl constructor.
+     * @param User $user
+     * @param Session $session
+     * @param CartFacade $cartFacade
+     * @param SizeFacade $sizeFacade
+     * @param OrdersFacade $ordersFacade
+     * @param UsersFacade $usersFacade
+     */
+  public function __construct(User $user, Session $session, CartFacade $cartFacade, SizeFacade $sizeFacade, OrdersFacade $ordersFacade, UsersFacade $usersFacade){
     $this->user=$user;
     $this->cartFacade=$cartFacade;
+    $this->sizeFacade = $sizeFacade;
+    $this->ordersFacade = $ordersFacade;
+    $this->usersFacade = $usersFacade;
     $this->cartSession=$session->getSection('cart');
     $this->cart=$this->prepareCart();
   }
