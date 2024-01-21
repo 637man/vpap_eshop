@@ -12,7 +12,6 @@ use LeanMapper\Entity;
  * @property int|null $userId = null
  * @property CartItem[] $items m:belongsToMany
  * @property DateTime|null $lastModified
- * @property int|null $orderCreated = null
  */
 class Cart extends Entity{
 

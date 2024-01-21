@@ -30,7 +30,7 @@
 
     <div class="p-2">
         Celková cena je: {$cart->getTotalPrice()} Kč
-        <a n:if="$cart->orderCreated == null" class="btn btn-primary float-right" n:href="createOrder!, $cart->cartId">Vytvořit objednávku</a>
+        <a class="btn btn-primary float-right" n:href="createOrder!, $cart->cartId">Vytvořit objednávku</a>
     </div>
 
 {/if}
