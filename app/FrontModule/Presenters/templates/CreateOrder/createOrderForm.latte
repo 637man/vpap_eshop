@@ -1,2 +1,24 @@
+{varType App\Model\Entities\Cart $cart}
+{varType string[] $sizes}
+
 {block content}
+<h2>Vybrané produkty</h2>
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>Název produkt</th>
+        <th>Velikost</th>
+        <th>Počet kusů</th>
+    </tr>
+    </thead>
+    <tbody>
+    {foreach $cart->items as $item}
+        <tr>
+            <td>{$item->product->title}</td>
+            <td style="padding-left: 30px">{$sizes[$item->cartItemId] ?? "Univerzální"} </td>
+            <td style="padding-left: 30px">{$item->count}</td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
 {control createOrderForm}

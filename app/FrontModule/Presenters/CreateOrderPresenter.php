@@ -13,6 +13,7 @@ use App\Model\Facades\CartFacade;
 use App\Model\Facades\OrderItemFacade;
 use App\Model\Facades\OrdersFacade;
 use App\Model\Facades\ProductsFacade;
+use App\Model\Facades\SizeFacade;
 use App\Model\Facades\UsersFacade;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Multiplier;
@@ -27,14 +28,23 @@ class CreateOrderPresenter extends BasePresenter{
     private OrderItemFacade $orderItemFacade;
     private UsersFacade $usersFacade;
     private CartFacade $cartFacade;
+    private SizeFacade $sizeFacade;
 
 
     /**
      * Akce pro zobrazení jednoho produktu
-     * @param string $url
-     * @throws BadRequestException
+     * @param int $cartId
+     * @throws \Exception
      */
     public function renderCreateOrderForm(int $cartId):void {
+        $this->template->cart=$this->cartFacade->getCartById($cartId);
+        $sizes = [];
+        foreach ($this->template->cart->items as $item) {
+            if ($item->sizeId !== null) {
+                $sizes[$item->cartItemId] = $this->sizeFacade->getSize($item->sizeId)->getData(['size'])['size'];
+            }
+        }
+        $this->template->sizes = $sizes;
         $form = $this->getComponent('createOrderForm');
         $form->setDefaults(['cartId' => $cartId]);
     }
@@ -42,12 +52,16 @@ class CreateOrderPresenter extends BasePresenter{
     protected function createComponentCreateOrderForm():CreateOrderForm {
         $form = $this->createOrderFormFactory->create();
 
-        $form->onSubmit[]=function(ProductCartForm $form){
+        $form->onSubmit[]=function(CreateOrderForm $form){
             $cart = $this->cartFacade->getCartById($form->values->cartId);
             $order = new Orders();
             $order->status = 1;
             $order->price = 11;
             $order->user = $this->usersFacade->getUser($this->user->getId());
+            $order->address = $form->values->address;
+            $order->city = $form->values->city;
+            $order->psc = (int) $form->values->psc;
+            $order->telephone = (int) $form->values->telephone;
             $this->ordersFacade->saveOrder($order);
 
             foreach ($cart->items as $item) {
@@ -78,5 +92,8 @@ class CreateOrderPresenter extends BasePresenter{
     }
     public function injectCartFacade(CartFacade $cartFacade):void {
         $this->cartFacade = $cartFacade;
+    }
+    public function injectSizeFacade(SizeFacade $sizeFacade):void {
+        $this->sizeFacade = $sizeFacade;
     }
 }

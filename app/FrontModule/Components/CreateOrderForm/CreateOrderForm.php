@@ -59,7 +59,7 @@ class CreateOrderForm extends Form{
         ->addRule(self::LENGTH, 'Telefonní číslo má 9 čísel', 9);
 
     $this->addCheckbox('confirmation', 'Souhlasím se závazným vytvořením objednávky.')
-        ->setRequired();
+        ->setRequired('Musíte souhlasit se závazným vytvořením');
 
     $this->addSubmit('ok','Vytvořit objednávku');
   }
