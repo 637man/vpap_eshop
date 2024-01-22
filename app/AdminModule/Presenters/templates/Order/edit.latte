@@ -1,6 +1,26 @@
 {varType App\Model\Entities\Orders $order}
+{varType App\Model\Entities\OrderItem[] $orderItems}
 {block content}
+<h2>Obsah objednávky</h2>
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>Název produkt</th>
+        <th>Velikost</th>
+        <th>Počet kusů</th>
+    </tr>
+    </thead>
+    <tbody>
+    {foreach $orderItems as $item}
+        <tr>
+            <td>{$productNames[$item->productId]}</td>
+            <td style="padding-left: 30px">{$productSizes[$item->sizeId] ?? "Univerzální"} </td>
+            <td style="padding-left: 30px">{$item->count}</td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
 
-<h1 n:block="title">Úprava objednávky</h1>
+<h2 n:block="title">Úprava objednávky</h2>
 
 {control orderEditForm}

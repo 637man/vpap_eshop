@@ -6,6 +6,7 @@
 
 
 {else}
+    {snippet table}
     <table class="table table-hover">
         <thead>
             <tr>
@@ -21,6 +22,8 @@
                 <td>{$sizes[$item->cartItemId] ?? "Univerzální"} </td>
                 <td>{$item->count}</td>
                 <td>
+                    <a class="btn ajax" href="{link changeItemCount! $item->cartItemId, 1}">+1</a>
+                    <a class='btn ajax {$item->count === 1 ? 'disabled' : ''}' href="{link changeItemCount! $item->cartItemId, -1}">-1</a>
                     <a href="{link remove! $item->cartItemId}">odebrat</a>
                 </td>
             </tr>
@@ -32,5 +35,5 @@
         Celková cena je: {$cart->getTotalPrice()} Kč
         <a class="btn btn-primary float-right" n:href="createOrder!, $cart->cartId">Vytvořit objednávku</a>
     </div>
-
+    {/snippet}
 {/if}

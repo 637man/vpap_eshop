@@ -60,9 +60,10 @@ class ProductCartForm extends Form{
         $s[$size->sizeId] = $sizeName->size;
     }
 
-    $this->addRadioList('sizes', 'Velikosti: ',$s)
-        ->setRequired();
-
+    if (!empty($s)) {
+        $this->addRadioList('sizes', 'Velikosti: ', $s)
+            ->setRequired();
+    }
 
     $this->addSubmit('ok','přidat do košíku');
   }

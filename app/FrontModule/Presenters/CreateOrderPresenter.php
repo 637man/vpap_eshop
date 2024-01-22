@@ -17,6 +17,8 @@ use App\Model\Facades\SizeFacade;
 use App\Model\Facades\UsersFacade;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Multiplier;
+use Nette\Mail\Message;
+use Nette\Mail\SendmailMailer;
 
 /**
  * Class CreateOrderPresenter
@@ -56,12 +58,13 @@ class CreateOrderPresenter extends BasePresenter{
             $cart = $this->cartFacade->getCartById($form->values->cartId);
             $order = new Orders();
             $order->status = 1;
-            $order->price = 11;
+            $order->price = $cart->getTotalPrice();
             $order->user = $this->usersFacade->getUser($this->user->getId());
             $order->address = $form->values->address;
             $order->city = $form->values->city;
             $order->psc = (int) $form->values->psc;
             $order->telephone = (int) $form->values->telephone;
+            $order->email = $form->values->email;
             $this->ordersFacade->saveOrder($order);
 
             foreach ($cart->items as $item) {
@@ -73,7 +76,23 @@ class CreateOrderPresenter extends BasePresenter{
                 $orderItem->orderId = $order->ordersId;
                 $this->orderItemFacade->saveOrderItem($orderItem);
             }
-            $this->redirect('this');
+
+            $this->cartFacade->deleteCartByUser($this->user->getId());
+
+            #region příprava textu mailu
+            $mail = new Message();
+            $mail->setFrom('pelj03@vse.cz');
+            $mail->addTo($form->values->email);
+            $mail->subject = 'Vytvoření objednávky';
+            $mail->htmlBody = 'Vaše objednávka byla vytvořena. Celková cena je: ' . $order->price . ' Kč';
+            #endregion endregion příprava textu mailu
+
+            //odeslání mailu pomocí PHP funkce mail
+            $mailer = new SendmailMailer();
+            $mailer->send($mail);
+
+            $this->flashMessage('Objednávka vytvořena');
+            $this->redirect('Product:list');
         };
         return $form;
     }

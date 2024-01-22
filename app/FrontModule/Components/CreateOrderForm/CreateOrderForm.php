@@ -57,6 +57,7 @@ class CreateOrderForm extends Form{
     $this->addText('phone', 'Telefonní číslo')
         ->setRequired('Zadejte vaše kontaktní telefonní číslo')
         ->addRule(self::LENGTH, 'Telefonní číslo má 9 čísel', 9);
+    $this->addEmail('email', 'Emailová adresa')->setRequired('Zadejte vaši emailovou adresu prosím.');
 
     $this->addCheckbox('confirmation', 'Souhlasím se závazným vytvořením objednávky.')
         ->setRequired('Musíte souhlasit se závazným vytvořením');

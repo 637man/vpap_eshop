@@ -2,10 +2,12 @@
 
 namespace App\AdminModule\Components\OrderEditForm;
 
+use App\AdminModule\Presenters\OrderPresenter;
 use App\Model\Entities\Orders;
 use App\Model\Entities\Product;
 use App\Model\Entities\SizesToProducts;
 use App\Model\Facades\CategoriesFacade;
+use App\Model\Facades\OrdersFacade;
 use App\Model\Facades\ProductsFacade;
 use App\Model\Facades\SizeFacade;
 use App\Model\Facades\SizesToProductsFacade;
@@ -36,7 +38,7 @@ class OrderEditForm extends Form{
   public array $onCancel = [];
 
   private CategoriesFacade $categoriesFacade;
-  private ProductsFacade $productsFacade;
+  private OrdersFacade $ordersFacade;
   private SizeFacade $sizeFacade;
   private SizesToProductsFacade $sizesToProductsFacade;
 
@@ -45,23 +47,23 @@ class OrderEditForm extends Form{
      * @param Nette\ComponentModel\IContainer|null $parent
      * @param string|null $name
      * @param CategoriesFacade $categoriesFacade
-     * @param ProductsFacade $productsFacade
+     * @param OrdersFacade $ordersFacade
      * @param SizeFacade $sizeFacade
      * @param SizesToProductsFacade $sizesToProductsFacade
      * @noinspection PhpOptionalBeforeRequiredParametersInspection
      */
-  public function __construct(Nette\ComponentModel\IContainer $parent = null, string $name = null, CategoriesFacade $categoriesFacade, ProductsFacade $productsFacade, SizeFacade $sizeFacade, SizesToProductsFacade $sizesToProductsFacade){
+  public function __construct(Nette\ComponentModel\IContainer $parent = null, string $name = null, CategoriesFacade $categoriesFacade, OrdersFacade $ordersFacade, SizeFacade $sizeFacade, SizesToProductsFacade $sizesToProductsFacade){
     parent::__construct($parent, $name);
     $this->setRenderer(new Bs4FormRenderer(FormLayout::VERTICAL));
     $this->categoriesFacade=$categoriesFacade;
-    $this->productsFacade=$productsFacade;
+    $this->ordersFacade = $ordersFacade;
     $this->sizeFacade = $sizeFacade;
     $this->sizesToProductsFacade = $sizesToProductsFacade;
     $this->createSubcomponents();
   }
 
   private function createSubcomponents():void {
-    $productId=$this->addHidden('ordersId');
+    $this->addHidden('ordersId');
 
     $this->addInteger('price','Cena')
       ->setDisabled();
@@ -70,39 +72,22 @@ class OrderEditForm extends Form{
       ->setDisabled();
 
     $this->addText('created', 'Vytvořeno')
-      ->setHtmlType('date')
         ->setDisabled();
 
-    $this->addInteger('status', 'Status')
-      ->setHtmlAttribute('title', 'Hdonoty: 1 => nová objednávka, 2 => zaplacená, 3 => odeslána')
-    ->addRule(self::MIN, 'Minimální hodnota je 1', 1)
-    ->addRule(self::MAX, "Maximální hodnota je 3", 3);
+    $this->addRadioList('status', 'Status objednávky', OrderPresenter::$orderStatuses)
+        ->setRequired('Status objednávky musí být vyplněn');
 
     $this->addSubmit('ok','uložit')
       ->onClick[]=function(SubmitButton $button){
         $values=$this->getValues('array');
-        if (!empty($values['productId'])){
-          try{
-            $product=$this->productsFacade->getProduct($values['productId']);
-          }catch (\Exception $e){
-            $this->onFailed('Požadovaný produkt nebyl nalezen.');
-            return;
-          }
-        }else{
-          $product=new Product();
-        }
-        $product->assign($values,['title','url','description','available']);
-        $product->category=$this->categoriesFacade->getCategory($values['categoryId']);
-        $product->price=floatval($values['price']);
-        $this->productsFacade->saveProduct($product);
-        $this->setValues(['productId'=>$product->productId]);
-
-        $this->onFinished('Produkt byl uložen.');
+        $order = $this->ordersFacade->getOrder($values['ordersId']);
+        $order->status = $values['status'];
+        $this->ordersFacade->saveOrder($order);
+        $this->onFinished('Objednávka byla upravena.');
       };
     $this->addSubmit('storno','zrušit')
-      ->setValidationScope([$productId])
       ->onClick[]=function(SubmitButton $button){
-        $this->onCancel();
+        $this->getPresenter()->redirect('Order:default');
       };
   }
 

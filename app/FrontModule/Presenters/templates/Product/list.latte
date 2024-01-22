@@ -5,10 +5,12 @@
 
 <section class="row" n:if="!empty($products)">
     {foreach $products as $product}
-        <div class="col-md-6 col-lg-4 my-2 card">
-            <a href="{plink Product:show url=>$product->url}" class="h4">{$product->title}</a>
-            {control "productCartForm-$product->productId"}
-            <span>Jednotková cena: {$product->price} Kč</span>
+        <div class="col-lg-4 border">
+            <div class="my-2 col-12">
+                <a href="{plink Product:show url=>$product->url}" class="h4 mt-1">{$product->title}</a>
+                {control "productCartForm-$product->productId"}
+                <span>Jednotková cena: {$product->price} Kč</span>
+            </div>
         </div>
     {/foreach}
 </section>

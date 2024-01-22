@@ -1,4 +1,5 @@
 {varType App\Model\Entities\Orders[] $orders}
+{var $statuses = App\AdminModule\Presenters\OrderPresenter::$orderStatuses}
 {block content}
 
 <h1 n:block="title">Správa objednávek</h1>
@@ -19,7 +20,7 @@
             <tr>
                 <td>{$order->ordersId}</td>
                 <td>{$order->price} Kč</td>
-                <td>{$order->status}</td>
+                <td>{$statuses[$order->status]}</td>
                 <td>{$order->user->name}</td>
                 <td>{$order->created|date:'d-m-Y H:i:s'}</td>
                 <td class="text-nowrap">

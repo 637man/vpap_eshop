@@ -29,7 +29,7 @@ class OrderItemFacade{
      * @return array
      */
     public function getItemsByOrderId(int $id):array {
-        return $this->orderItemRepository->findAllBy(['orderId' => $id]);
+        return $this->orderItemRepository->findAllBy(['order_id' => $id]);
     }
 
     /**

@@ -58,6 +58,15 @@ class CartControl extends Control{
     $template->render();
   }
 
+  public function handleChangeItemCount(int $cartItemId, int $newCount) {
+      $cartItem = $this->cartFacade->getCartItem($cartItemId);
+      $this->cartFacade->deleteCartItem($cartItem);
+      $cartItem->count += $newCount;
+      $this->cartFacade->saveCartItem($cartItem);
+      $this->cart->updateCartItems();
+      $this->redrawControl('table');
+  }
+
   public function handleRemove($cartItemId){
     $this->cart->updateCartItems();
     try{
@@ -84,7 +93,7 @@ class CartControl extends Control{
     $cartItem=null;
     if (!empty($this->cart->items)){
       foreach ($this->cart->items as $item){
-        if ($item->product->productId == $product->productId && $item->product->sizeId == $product->sizeId){
+        if ($item->product->productId == $product->productId && $item->sizeId == $product->sizeId){
           $cartItem=$item;
           break;
         }

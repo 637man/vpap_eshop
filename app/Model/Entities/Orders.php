@@ -17,6 +17,7 @@ use LeanMapper\Entity;
  * @property string $city
  * @property string $address
  * @property int $telephone
+ * @property string $email
  */
 class Orders extends Entity implements \Nette\Security\Resource{
 
